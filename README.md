@@ -2,7 +2,7 @@
 Moodle plugin of type ltiusource that customizes LTI calls to Kaltura media provider for SWITCH users.
 
 ## Install
-Clone or copy thethis repo into `/mod/lti/source` folder. From Moodle base folder:
+Clone or copy this repo into `/mod/lti/source` folder. From Moodle base folder:
 ```
 cd mod/lti/source
 git@github.com:estevebadia/switch_config.git
