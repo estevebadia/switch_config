@@ -1,5 +1,5 @@
 # SWITCH LTI configuration
-Moodle plugin of type ltiusource that customizes LTI calls to Kaltura media provider for SWITCH users.
+Moodle plugin of type ltisource that customizes LTI calls to Kaltura media provider for SWITCH users.
 
 ## Install
 Clone or copy this repo into `/mod/lti/source` folder. From Moodle base folder:
