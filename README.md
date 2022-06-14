@@ -5,7 +5,7 @@ Moodle plugin of type ltisource that customizes LTI calls to Kaltura media provi
 Clone or copy this repo into `/mod/lti/source` folder. From Moodle base folder:
 ```
 cd mod/lti/source
-git@github.com:estevebadia/switch_config.git
+git clone git@github.com:estevebadia/switch_config.git
 ```
 
 ## Setup
