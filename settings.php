@@ -31,7 +31,7 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('ltisource_switch_config/kaltura_host',
       new lang_string('kaltura_host_setting', 'ltisource_switch_config'),
       new lang_string('kaltura_host_setting_description', 'ltisource_switch_config'),
-      '1234.kaf.switch.ch', PARAM_RAW_TRIMMED));
+      '1234.kaf.cast.switch.ch', PARAM_RAW_TRIMMED));
 
     // LTI param user_id will be overriden by one of the following options.
     $settings->add(new admin_setting_configselect(
