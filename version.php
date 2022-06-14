@@ -30,5 +30,5 @@ $plugin->version   = 2022061300;
 // to Moodle 2.8, but it has just been tested with 3.9.
 $plugin->requires  = 2020061500;
 $plugin->component = 'ltisource_switch_config'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_ALPHA;
+$plugin->maturity  = MATURITY_RC;
 $plugin->release   = 'v0.1';
