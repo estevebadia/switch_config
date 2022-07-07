@@ -22,13 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace ltisource_switch_config;
 
-// The current plugin version (Date: YYYYMMDDXX).
-$plugin->version   = 2022070700;
-// Requires Moodle 3.9. There is no trivial reason why it could not be relaxed
-// to Moodle 2.8, but it has just been tested with 3.9.
-$plugin->requires  = 2020061500;
-$plugin->component = 'ltisource_switch_config'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_RC;
-$plugin->release   = 'v0.1';
+class observer {
+  public static function course_module_viewed(\core\event\base $event)
+  {
+    global $PAGE;
+    // Inject custom CSS (in order to have a minimum iframe height).
+    $PAGE->requires->css('/mod/lti/source/switch_config/override-styles.css');  }
+}

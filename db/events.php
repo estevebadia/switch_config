@@ -22,13 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-// The current plugin version (Date: YYYYMMDDXX).
-$plugin->version   = 2022070700;
-// Requires Moodle 3.9. There is no trivial reason why it could not be relaxed
-// to Moodle 2.8, but it has just been tested with 3.9.
-$plugin->requires  = 2020061500;
-$plugin->component = 'ltisource_switch_config'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_RC;
-$plugin->release   = 'v0.1';
+$observers = array(
+  array(
+    'eventname' => '\mod_lti\event\course_module_viewed',
+    'callback' => '\ltisource_switch_config\observer::course_module_viewed',
+  )
+);
