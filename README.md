@@ -8,7 +8,7 @@ cd mod/lti/source
 git clone https://github.com/estevebadia/switch_config.git
 ```
 ## Setup
-After having downloaded the plugin code, login to Moodle with administrator rights and install the plugin. Fill in the configuration settings *Kaltura host* and *LTI user_id paramater*. The options for Id are the standard user fields `user id`, `username`, `email` and `idnumber` and any custom profile field of type text. It is important that you set a valid *Kaltura host* before configuring the tools.
+After having downloaded the plugin code, login to Moodle with administrator rights and install the plugin. Fill in the configuration settings *Kaltura host* and *LTI user_id paramater*. The options for Id are the standard user fields `id`, `username`, `email` and `idnumber` and any custom profile field of type text. It is important that you set a valid *Kaltura host* before configuring the tools.
 
 In order to add the external tools, go to  *Site administration* > *Plugins* > *Activity modules* > *External tool* > *Manage tools*. Tool URLs provide the basic tool configuration options, but some settings can't be configured from the tool url and we must set them manually. Follow the steps:
 ### Add Media gallery external tool
