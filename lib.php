@@ -33,9 +33,7 @@ define('KALTURA_MEDIA_GALLERY_URL_PATH', '/hosted/index/course-gallery');
  * @param  string $endpoint
  * @param  array $requestparams
  */
-function ltisource_switch_config_before_launch($instance, $endpoint, $requestparams)
-{
-  global $USER;
+function ltisource_switch_config_before_launch($instance, $endpoint, $requestparams) {
   $params = array();
 
   // Check if this LTI launch needs to be overriden.
@@ -43,15 +41,7 @@ function ltisource_switch_config_before_launch($instance, $endpoint, $requestpar
   $parsed_endpoint = parse_url($endpoint);
   if ($kaltura_host == $parsed_endpoint['host']) {
 
-    // Override user_id parameter.
-    $override_userid = get_config('ltisource_switch_config', 'lti_user_id');
-    if ($override_userid == 'user_id') {
-      $params['user_id'] = $USER->id;
-    } else if ($override_userid == 'username') {
-      $params['user_id'] = $USER->username;
-    } else if ($override_userid == 'email') {
-      $params['user_id'] = $USER->email;
-    }
+    $params['user_id'] = ltisource_switch_config_get_lti_user_id();
 
     // Check if we are in a media gallery activity launch.
     if ($instance->cmid && ($parsed_endpoint['path'] == KALTURA_MEDIA_GALLERY_URL_PATH)) {
@@ -61,4 +51,33 @@ function ltisource_switch_config_before_launch($instance, $endpoint, $requestpar
   }
 
   return $params;
+}
+
+function ltisource_switch_config_get_lti_user_id() {
+  global $USER;
+
+  // Default case.
+  $id = $USER->id;
+  // Get the field to be used as LTI user id.
+  $override_userid = get_config('ltisource_switch_config', 'lti_user_id');
+  if ($override_userid == 'username') {
+    $id = $USER->username;
+  } else if ($override_userid == 'email') {
+    $id = $USER->email;
+  } else if ($override_userid == 'idnumber') {
+    $id = $USER->idnumber;
+  } else if (substr($override_userid, 0, strlen('profile_field_')) == 'profile_field_') {
+    $fieldname = substr($override_userid, strlen('profile_field_'));
+    if (array_key_exists($fieldname, $USER->profile)) {
+      $id = $USER->profile[$fieldname];
+    } else {
+      // Could be the case if a custom field is deleted.
+      error_log('User custom field ' . $fieldname . ' can\'t be used as LTI user id because it doesn\'t exist.');
+    }
+  }
+
+  // Add (usually empty) suffix.
+  $suffix = get_config('ltisource_switch_config', 'lti_user_id_suffix');
+
+  return $id . $suffix;
 }

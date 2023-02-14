@@ -25,6 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->dirroot . '/user/profile/lib.php');
+
 if ($hassiteconfig) {
   if ($ADMIN->fulltree) {
     // Only LTI launches with a specific "organization url" will be overriden.
@@ -33,17 +36,32 @@ if ($hassiteconfig) {
       new lang_string('kaltura_host_setting_description', 'ltisource_switch_config'),
       '1234.kaf.cast.switch.ch', PARAM_RAW_TRIMMED));
 
+    $fields = array(
+      'user_id' => new lang_string('lti_user_id_setting_user_id', 'ltisource_switch_config'),
+      'username' => new lang_string('lti_user_id_setting_username', 'ltisource_switch_config'),
+      'email' => new lang_string('lti_user_id_setting_email', 'ltisource_switch_config'),
+      'idnumber' => new lang_string('lti_user_id_setting_idnumber', 'ltisource_switch_config'),
+    );
+
+    // Add custom profile fields of type text.
+    $custom_fields = profile_get_custom_fields();
+    foreach ($custom_fields as $id => $custom_field) {
+      if ($custom_field->datatype == 'text') {
+        $fields['profile_field_' . $custom_field->shortname] = $custom_field->name;
+      }
+    }
     // LTI param user_id will be overriden by one of the following options.
     $settings->add(new admin_setting_configselect(
       'ltisource_switch_config/lti_user_id',
       new lang_string('lti_user_id_setting', 'ltisource_switch_config'),
       new lang_string('lti_user_id_setting_description', 'ltisource_switch_config'),
       'user_id',
-      array(
-        'user_id' => new lang_string('lti_user_id_setting_user_id', 'ltisource_switch_config'),
-        'username' => new lang_string('lti_user_id_setting_username', 'ltisource_switch_config'),
-        'email' => new lang_string('lti_user_id_setting_email', 'ltisource_switch_config'),
-      )
+      $fields
     ));
+
+    $settings->add(new admin_setting_configtext('ltisource_switch_config/lti_user_id_suffix',
+      new lang_string('lti_user_id_suffix_setting', 'ltisource_switch_config'),
+      new lang_string('lti_user_id_suffix_setting_description', 'ltisource_switch_config'),
+      '', PARAM_RAW_TRIMMED));
   }
 }

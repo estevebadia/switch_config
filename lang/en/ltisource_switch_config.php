@@ -25,9 +25,12 @@
 $string['pluginname'] = 'SWITCH LTI configuration';
 $string['manage_switch_config'] = 'Manage SWITCH LTI configuration';
 $string['lti_user_id_setting'] = 'LTI user_id paramater';
-$string['lti_user_id_setting_description'] = 'Value to send as user_id LTI parameter. Moodle default is user id, kaltura default is username.';
-$string['lti_user_id_setting_user_id'] = 'user id';
-$string['lti_user_id_setting_username'] = 'username';
-$string['lti_user_id_setting_email'] = 'email';
+$string['lti_user_id_setting_description'] = 'Value to send as user_id LTI parameter. Moodle default is User Id, Kaltura default is Username.';
+$string['lti_user_id_setting_user_id'] = 'User Id';
+$string['lti_user_id_setting_username'] = 'Username';
+$string['lti_user_id_setting_email'] = 'Email';
 $string['kaltura_host_setting'] = 'Kaltura host';
 $string['kaltura_host_setting_description'] = 'Your host for accessing kaltura servicves. LTI launches matching this host will be overriden. Other LTI launches won\'t be modified.';
+$string['lti_user_id_setting_idnumber'] = 'ID number';
+$string['lti_user_id_suffix_setting'] = 'LTI user_id suffix';
+$string['lti_user_id_suffix_setting_description'] = 'Optional suffix text string to append to the user_id LTI parameter. For example "@domain.com".';
