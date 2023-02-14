@@ -32,6 +32,8 @@ define('KALTURA_MEDIA_GALLERY_URL_PATH', '/hosted/index/course-gallery');
  * @param  object $instance
  * @param  string $endpoint
  * @param  array $requestparams
+ *
+ * @return array
  */
 function ltisource_switch_config_before_launch($instance, $endpoint, $requestparams) {
   $params = array();
@@ -53,6 +55,12 @@ function ltisource_switch_config_before_launch($instance, $endpoint, $requestpar
   return $params;
 }
 
+/**
+ * Return the user_id parameter to be used in the LTI launch call for the
+ * current user, based on this plugin admin settings.
+ *
+ * @return string
+ */
 function ltisource_switch_config_get_lti_user_id() {
   global $USER;
 
