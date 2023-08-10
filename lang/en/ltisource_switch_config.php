@@ -34,3 +34,9 @@ $string['kaltura_host_setting_description'] = 'Your host for accessing kaltura s
 $string['lti_user_id_setting_idnumber'] = 'ID number';
 $string['lti_user_id_suffix_setting'] = 'LTI user_id suffix';
 $string['lti_user_id_suffix_setting_description'] = 'Optional suffix text string to append to the user_id LTI parameter. For example "@domain.com".';
+// Define remaining strings from settins page
+$string['lti_fix_clientid_button_name'] = 'Fix Client IDs';
+$string['lti_fix_clientid_button'] = 'Execute';
+$string['lti_fix_clientid_button_description'] = 'Click to set the client_id of all existing Kaltura external tools to the same value as the Kaltura plugin.';
+$string['lti_fix_clientid_button_success'] = 'Updated the client_id of {$a} tool types.';
+$string['lti_fix_clientid_button_empty'] = 'No tool types were updated.';

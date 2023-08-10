@@ -63,5 +63,29 @@ if ($hassiteconfig) {
       new lang_string('lti_user_id_suffix_setting', 'ltisource_switch_config'),
       new lang_string('lti_user_id_suffix_setting_description', 'ltisource_switch_config'),
       '', PARAM_RAW_TRIMMED));
+
+    // Add a button to fix the client id. Since there is no suitable admin_setting for this,
+    // we use a description with a button to POST to fix_client_id.php.
+    $button = html_writer::empty_tag('input', array(
+      'type' => 'submit',
+      'value' => new lang_string('lti_fix_clientid_button', 'ltisource_switch_config'),
+      'class' => 'btn btn-outline-primary mb-3',
+      'id'=> 'fix_clientid',
+      'name' => 'fix_clientid',
+      'formaction' => new moodle_url('/mod/lti/source/switch_config/fix_client_id.php'),
+    ));
+    $button .= html_writer::tag('p', new lang_string('lti_fix_clientid_button_description', 'ltisource_switch_config'));
+
+    $fixed_client_id = optional_param('fix_clientid', null, PARAM_INT);
+    global $OUTPUT;
+    if ($fixed_client_id !== null) {
+      if ($fixed_client_id > 0) {
+        $button .= $OUTPUT->notification(new lang_string('lti_fix_clientid_button_success', 'ltisource_switch_config', $fixed_client_id), 'notifysuccess');
+      } else {
+        $button .= $OUTPUT->notification(new lang_string('lti_fix_clientid_button_empty', 'ltisource_switch_config'), 'notifysuccess');
+      }
+    }
+
+    $settings->add(new admin_setting_description('ltisource_switch_config/fix_client_id_heading', new lang_string('lti_fix_clientid_button_name', 'ltisource_switch_config'), $button));
   }
 }
