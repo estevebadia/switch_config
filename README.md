@@ -49,7 +49,7 @@ In order to integrate Kaltura using LTI 1.3.
  - The client_id parameter needs to be the same string in all tools, including the ones provided by the Kaltura plugin. In order to do this, go to this plugin settings page (`[MOODLE BASE URL]/admin/settings.php?section=ltisourcesettingswitch_config`) and click
  the button *Fix Client IDs*. You'll need to do that after setting new LTI 1.3 tools pointing to Kaltura.
 
- - See also https://knowledge.kaltura.com/help/kaltura-video-package-for-moodle-4x-installation-guide for further instructions on the Kaltura side.
+ - In order for both the Kaltura plugin and External Tools with Deep Linking (Video resource) to work, the `lti13PlatformOidcAuthUrl` setting in the *Hosted* module of the KAF configuration site needs to be set to `[MOODLE BASE URL]/mod/lti/source/switch_config/auth.php`. See also https://knowledge.kaltura.com/help/kaltura-video-package-for-moodle-4x-installation-guide for further instructions on the Kaltura side.
 
 ### Other features
  See https://knowledge.kaltura.com/help/kaltura-application-framework-kaf-lti-integration-guide for all potential Kaltura LTI features.
