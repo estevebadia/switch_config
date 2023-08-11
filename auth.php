@@ -26,7 +26,7 @@
  */
 
 require_once(__DIR__ . '/../../../../config.php');
-$loginhint = optional_param('login_hint', '', PARAM_TEXT);
+$loginhint = optional_param('lti_message_hint', '', PARAM_TEXT);
 $kaltura_plugin = false;
 if (!empty($loginhint)) {
   $kaltura_modules = ['mymedia', 'coursegallery', 'browseembed'];
