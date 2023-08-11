@@ -25,9 +25,9 @@
 namespace ltisource_switch_config;
 
 class observer {
-  public static function course_module_viewed(\core\event\base $event)
-  {
+  public static function course_module_viewed(\core\event\base $event) {
     global $PAGE;
     // Inject custom CSS (in order to have a minimum iframe height).
-    $PAGE->requires->css('/mod/lti/source/switch_config/override-styles.css');  }
+    $PAGE->requires->css('/mod/lti/source/switch_config/override-styles.css');
+  }
 }
