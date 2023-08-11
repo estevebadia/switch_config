@@ -11,7 +11,7 @@ git clone https://github.com/estevebadia/switch_config.git
 ## Update
 Update from git. From Moodle base folser:
 ```
-cd mod/lti/source
+cd mod/lti/source/switch_config
 git pull
 ```
 ## Setup
