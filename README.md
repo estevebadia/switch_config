@@ -7,13 +7,14 @@ Clone or copy this repo into `/mod/lti/source` folder. From Moodle base folder:
 cd mod/lti/source
 git clone https://github.com/estevebadia/switch_config.git
 ```
-
+Visit your Moodle as admin and update the database as required.
 ## Update
 Update from git. From Moodle base folser:
 ```
 cd mod/lti/source/switch_config
 git pull
 ```
+Visit your Moodle as admin and update the database as required.
 ## Setup
 After having downloaded the plugin code, login to Moodle with administrator rights and install the plugin. Fill in the configuration settings *Kaltura host* and *LTI user_id paramater*. The options for Id are the standard user fields `id`, `username`, `email` and `idnumber` and any custom profile field of type text. It is important that you set a valid *Kaltura host* before configuring the tools.
 
@@ -34,8 +35,21 @@ In order to add the external tools, go to  *Site administration* > *Plugins* > *
  - If necessary, click the *Show more...* link at the end of *Tool Settings* section.
  - Check the box *Content Item Message* and copy the value from *Tool URL* to *Content selection URL*.
 ### LTI 1.3
- - If you are using LTI 1.3, the client_id parameter needs to be the same string in all tools, including the ones provided by the Kaltura plugin. In order to do this, go to this plugin settings page (/admin/settings.php?section=ltisourcesettingswitch_config) and just click
- the button "Fix Client IDs". You'll need to do that after setting new LTI 1.3 tools pointing to Kaltura.
+In order to integrate Kaltura using LTI 1.3.
+
+ - Use the following additional settings when configuring the tool types:
+
+ | Name | Value |
+ |------|-------|
+ | Public key type | `Keyset URL` |
+ | Public keyset | `[KAF URL]/hosted/index/lti-advantage-key-set` |
+ | Initiate login URL | `[KAF URL]/hosted/index/oidc-init` |
+ | Redirection URI(s) | `[KAF URL]/hosted/index/oauth2-launch` |
+
+ - The client_id parameter needs to be the same string in all tools, including the ones provided by the Kaltura plugin. In order to do this, go to this plugin settings page (`[MOODLE BASE URL]/admin/settings.php?section=ltisourcesettingswitch_config`) and click
+ the button *Fix Client IDs*. You'll need to do that after setting new LTI 1.3 tools pointing to Kaltura.
+
+ - See also https://knowledge.kaltura.com/help/kaltura-video-package-for-moodle-4x-installation-guide for further instructions on the Kaltura side.
 
 ### Other features
  See https://knowledge.kaltura.com/help/kaltura-application-framework-kaf-lti-integration-guide for all potential Kaltura LTI features.
