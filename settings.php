@@ -36,6 +36,24 @@ if ($hassiteconfig) {
       new lang_string('kaltura_host_setting_description', 'ltisource_switch_config'),
       '1234.kaf.cast.switch.ch', PARAM_RAW_TRIMMED));
 
+    $api_url = 'https://api.cast.switch.ch';
+    $settings->add(new admin_setting_configtext('ltisource_switch_config/api_url',
+    new lang_string('api_url', 'ltisource_switch_config'),
+    new lang_string('api_url_description', 'ltisource_switch_config'),
+    $api_url, PARAM_RAW_TRIMMED));
+
+    $partner_id = get_config('local_kaltura', 'partner_id');
+    $settings->add(new admin_setting_configtext('ltisource_switch_config/partner_id',
+    new lang_string('partner_id', 'ltisource_switch_config'),
+    new lang_string('partner_id_description', 'ltisource_switch_config'),
+    $partner_id ? $partner_id : '', PARAM_RAW_TRIMMED));
+
+    $adminsecret = get_config('local_kaltura', 'adminsecret');
+    $settings->add(new admin_setting_configtext('ltisource_switch_config/adminsecret',
+    new lang_string('adminsecret', 'ltisource_switch_config'),
+    new lang_string('adminsecret_description', 'ltisource_switch_config'),
+    $adminsecret ? $adminsecret : '', PARAM_RAW_TRIMMED));
+
     $fields = array(
       'user_id' => new lang_string('lti_user_id_setting_user_id', 'ltisource_switch_config'),
       'username' => new lang_string('lti_user_id_setting_username', 'ltisource_switch_config'),

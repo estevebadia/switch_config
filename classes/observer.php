@@ -30,4 +30,34 @@ class observer {
     // Inject custom CSS (in order to have a minimum iframe height).
     $PAGE->requires->css('/mod/lti/source/switch_config/override-styles.css');
   }
+
+  /**
+   * When a course is restored, copy the Kaltura Media Gallery contents from the
+   * original media galleries to the new media galleries using the Kaltura API.
+   */
+  public static function course_restored(\core\event\course_restored $event) {
+    // Don't process restores from different sites.
+    if (!$event->other['samesite']) {
+      return;
+    }
+    $logger = new logger();
+    $oldcourse = $event->other['originalcourseid'];
+    $newcourse = $event->courseid;
+
+    // Get the Kaltura Media Gallery activities from the old course.
+    $oldcms = \ltisource_switch_config\controller::get_kaltura_media_galleries($oldcourse);
+    $logger->log("Got " . count($oldcms) . " Kaltura Media Gallery activities from the source course.");
+
+    $restored = \ltisource_switch_config\controller::get_restored_tools($oldcms, $newcourse);
+
+    foreach ($oldcms as $id => $oldcm) {
+      if ($restored[$id] !== null) {
+        // Copy the Kaltura Media Gallery contents from the old category to the new one.
+        \ltisource_switch_config\controller::copy_kaltura_media_gallery($oldcm, $restored[$id]);
+      } else {
+        $logger->error("Could not find restored equivalent for LTI course module id $id.");
+      }
+    }
+
+  }
 }

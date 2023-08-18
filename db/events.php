@@ -26,5 +26,9 @@ $observers = array(
   array(
     'eventname' => '\mod_lti\event\course_module_viewed',
     'callback' => '\ltisource_switch_config\observer::course_module_viewed',
-  )
+  ),
+  array(
+    'eventname' => '\core\event\course_restored',
+    'callback' => '\ltisource_switch_config\observer::course_restored',
+  ),
 );
