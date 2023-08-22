@@ -26,12 +26,13 @@
  */
 
 require_once(__DIR__ . '/../../../../config.php');
-$loginhint = optional_param('lti_message_hint', '', PARAM_TEXT);
-$kaltura_plugin = false;
+$loginhint = optional_param('lti_message_hint', '', PARAM_RAW);
+$kaltura_plugin = true;
 if (!empty($loginhint)) {
-  $kaltura_modules = ['mymedia', 'coursegallery', 'browseembed'];
   $ltimessagehint = json_decode($loginhint);
-  $kaltura_plugin = in_array($ltimessagehint->cmid, $kaltura_modules);
+  if (isset($ltimessagehint->cmid) && is_numeric($ltimessagehint->cmid)) {
+    $kaltura_plugin = false;
+  }
 }
 
 if ($kaltura_plugin) {
