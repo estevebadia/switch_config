@@ -31,7 +31,13 @@ $kaltura_plugin = true;
 if (!empty($loginhint)) {
   $ltimessagehint = json_decode($loginhint);
   if (isset($ltimessagehint->cmid) && is_numeric($ltimessagehint->cmid)) {
-    $kaltura_plugin = false;
+    // Ensure that the cmid refers to a LTI module.
+    global $DB;
+    $module = $DB->get_record('modules', array('name' => 'lti'));
+    $cm = $DB->get_record('course_modules', array('id' => $ltimessagehint->cmid, 'module' => $module->id));
+    if ($cm) {
+      $kaltura_plugin = false;
+    }
   }
 }
 
