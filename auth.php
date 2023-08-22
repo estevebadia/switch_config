@@ -29,15 +29,12 @@ require_once(__DIR__ . '/../../../../config.php');
 $loginhint = optional_param('lti_message_hint', '', PARAM_RAW);
 $kaltura_plugin = true;
 if (!empty($loginhint)) {
-  $ltimessagehint = json_decode($loginhint);
-  if (isset($ltimessagehint->cmid) && is_numeric($ltimessagehint->cmid)) {
-    // Ensure that the cmid refers to a LTI module.
-    global $DB;
-    $module = $DB->get_record('modules', array('name' => 'lti'));
-    $cm = $DB->get_record('course_modules', array('id' => $ltimessagehint->cmid, 'module' => $module->id));
-    if ($cm) {
-      $kaltura_plugin = false;
-    }
+  // Core Moodle LTI module either does not send any cmid (for ContentItem requests)
+  // or sends the course module ID.
+  // Instead, Kaltura plugin always sends one of "coursegallery", "mymedia", or
+  // "browseembed".
+  if (!isset($ltimessagehint->cmid) || is_numeric($ltimessagehint->cmid)) {
+    $kaltura_plugin = false;
   }
 }
 
