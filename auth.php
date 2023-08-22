@@ -33,6 +33,7 @@ if (!empty($loginhint)) {
   // or sends the course module ID.
   // Instead, Kaltura plugin always sends one of "coursegallery", "mymedia", or
   // "browseembed".
+  $ltimessagehint = json_decode($loginhint);
   if (!isset($ltimessagehint->cmid) || is_numeric($ltimessagehint->cmid)) {
     $kaltura_plugin = false;
   }
