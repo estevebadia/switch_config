@@ -31,4 +31,4 @@ $plugin->version   = 2023081802;
 $plugin->requires  = 2020061500;
 $plugin->component = 'ltisource_switch_config'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_RC;
-$plugin->release   = 'v0.5';
+$plugin->release   = 'v0.6';
