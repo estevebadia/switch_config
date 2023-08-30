@@ -34,9 +34,11 @@ class controller {
     global $DB;
     $sql = "SELECT cm.*, lti.name, lti.timecreated, lti.typeid, lti.toolurl, ltit.baseurl
             FROM {course_modules} cm
+            JOIN {modules} m ON cm.module = m.id
             JOIN {lti} lti ON cm.instance = lti.id
             LEFT JOIN {lti_types} ltit ON ltit.id = lti.typeid
             WHERE cm.course = :courseid
+              AND m.name = 'lti'
               AND ((lti.toolurl LIKE :toolurl) OR (ltit.baseurl LIKE :baseurl))
            ";
     $params = array(
