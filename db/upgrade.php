@@ -16,25 +16,11 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once __DIR__ . '/install.php';
+
 function xmldb_ltisource_switch_config_upgrade($oldversion) {
-  global $CFG, $DB, $OUTPUT;
-
-  $dbman = $DB->get_manager();
-
   if ($oldversion < 2023081103) {
-    // In order for Kaltura tools to work, all of them need to share the same
-    // client_id LTI 1.3 parameter. The unique index in the clientid field from
-    // the lti_types table prevents us from setting several tools to the same
-    // client_id. We therefore replace this index by a not unique index.
-    $table = new xmldb_table('lti_types');
-    $index = new xmldb_index('clientid', XMLDB_INDEX_UNIQUE, array('clientid'));
-    if ($dbman->index_exists($table, $index)) {
-      $dbman->drop_index($table, $index);
-    }
-    $index = new xmldb_index('clientid', XMLDB_INDEX_NOTUNIQUE, array('clientid'));
-    if (!$dbman->index_exists($table, $index)) {
-      $dbman->add_index($table, $index);
-    }
+    ltisource_switch_config_remove_client_id_unique_index();
   }
 
   return true;
