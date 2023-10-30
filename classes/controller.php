@@ -48,8 +48,18 @@ class controller {
       return;
     }
 
-    $api->copyCategory($category, $parent, $newcourse);
+    $newcategory = $api->copyCategory($category, $parent, $newcourse);
     $this->logger->log("Copied Course Media Gallery category $oldcourse to $newcourse");
+
+    // Now copy the InContext subcategory used for mashups.
+    $inContext = $api->getCategoryByFullName("Moodle>site>channels>$oldcourse>InContext");
+    if ($inContext !== false ) {
+      $api->copyCategory($inContext, $newcategory, 'InContext');
+      $this->logger->log("Copied InContext subcategory $oldcourse>InContext to $newcourse>InContext");
+    } else {
+      $this->logger->log("No InContext subcategory for category $oldcourse");
+    }
+
   }
 
   /**
