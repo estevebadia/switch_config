@@ -26,11 +26,57 @@ namespace ltisource_switch_config;
 require_once __DIR__ . '/../lib.php';
 
 class controller {
+  function __construct() {
+    $this->logger = new logger();
+  }
+
+  /**
+   * When a course is restored, copy the Kaltura Media Gallery contents from the
+   * original media gallery to the new media gallery using the Kaltura API.
+   */
+  public function restore_kaltura_course_media_gallery($oldcourse, $newcourse) {
+    $api = new kaltura_api($this->logger);
+    $parent = $api->getCategoryByFullName("Moodle>site>channels");
+    if ($parent === false) {
+      $this->logger->error("Could not find parent category 'Moodle>site>channels'");
+      return;
+    }
+
+    $category = $api->getCategoryByFullName("Moodle>site>channels>$oldcourse");
+    if ($category === false) {
+      $this->logger->error("Original category Moodle>site>channels>$oldcourse not found");
+      return;
+    }
+
+    $api->copyCategory($category, $parent, $newcourse);
+    $this->logger->log("Copied Course Media Gallery category $oldcourse to $newcourse");
+  }
+
+  /**
+   * Copy the contents of each Kaltura Media Gallery activity from the original
+   * course to the new course.
+   */
+  public function restore_kaltura_media_galleries($oldcourse, $newcourse) {
+    // Get the Kaltura Media Gallery activities from the old course.
+    $oldcms = $this->get_kaltura_media_galleries($oldcourse);
+    $this->logger->log("Got " . count($oldcms) . " Kaltura Media Gallery activities from the source course.");
+
+    $restored = $this->get_restored_tools($oldcms, $newcourse);
+
+    foreach ($oldcms as $id => $oldcm) {
+      if ($restored[$id] !== null) {
+        // Copy the Kaltura Media Gallery contents from the old category to the new one.
+        $this->copy_kaltura_media_gallery($oldcm, $restored[$id]);
+      } else {
+        $this->logger->error("Could not find restored equivalent for LTI course module id $id.");
+      }
+    }
+  }
   /**
    * Return the course module objects for all Kaltura Media Gallery LTI external
    * tools in the given course.
    */
-  static function get_kaltura_media_galleries($courseid) {
+  private function get_kaltura_media_galleries($courseid) {
     global $DB;
     $sql = "SELECT cm.*, lti.name, lti.timecreated, lti.typeid, lti.toolurl, ltit.baseurl
             FROM {course_modules} cm
@@ -53,7 +99,7 @@ class controller {
    * Provides the restored tool from a given original tool. The provided array is
    * the result of get_kaltura_media_galleries().
    */
-  static function get_restored_tools($modules, $courseid) {
+  private function get_restored_tools($modules, $courseid) {
     global $DB;
     $restored = array();
     foreach ($modules as $module) {
@@ -93,21 +139,20 @@ class controller {
    * Uses the Kaltura API to copy the resources from cm $source to
    * cm $destination.
    */
-  static function copy_kaltura_media_gallery($source, $destination) {
-    $logger = new logger();
-    $api = new kaltura_api($logger);
+  private function copy_kaltura_media_gallery($source, $destination) {
+    $api = new kaltura_api($this->logger);
     $parent = $api->getCategoryByFullName("Moodle>site>channels");
     if ($parent === false) {
-      $logger->error("Could not find parent category 'Moodle>site>channels'");
+      $this->logger->error("Could not find parent category 'Moodle>site>channels'");
       return;
     }
     $oldcategory = $source->course . '-' . $source->id;
     $category = $api->getCategoryByFullName("Moodle>site>channels>$oldcategory");
     if ($category === false) {
-      $logger->error("Original category $oldcategory not found");
+      $this->logger->error("Original category $oldcategory not found");
     }
     $newcategory = $destination->course . '-' . $destination->id;
     $api->copyCategory($category, $parent, $newcategory);
-    $logger->log("Copied category $oldcategory to $newcategory");
+    $this->logger->log("Copied category $oldcategory to $newcategory");
   }
 }
