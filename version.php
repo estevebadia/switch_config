@@ -25,10 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 // The current plugin version (Date: YYYYMMDDXX).
-$plugin->version   = 2023081802;
+$plugin->version   = 2023103000;
 // Requires Moodle 3.9. There is no trivial reason why it could not be relaxed
 // to Moodle 2.8, but it has just been tested with 3.9.
 $plugin->requires  = 2020061500;
 $plugin->component = 'ltisource_switch_config'; // Full name of the plugin (used for diagnostics).
 $plugin->maturity  = MATURITY_RC;
-$plugin->release   = 'v0.6';
+$plugin->release   = 'v0.7';
