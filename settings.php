@@ -54,6 +54,12 @@ if ($hassiteconfig) {
     new lang_string('adminsecret_description', 'ltisource_switch_config'),
     $adminsecret ? $adminsecret : '', PARAM_RAW_TRIMMED));
 
+    $kaltura_root_category = 'Moodle';
+    $settings->add(new admin_setting_configtext('ltisource_switch_config/kaltura_root_category',
+    new lang_string('kaltura_root_category', 'ltisource_switch_config'),
+    new lang_string('kaltura_root_category_description', 'ltisource_switch_config'),
+    $kaltura_root_category, PARAM_RAW_TRIMMED));
+
     $fields = array(
       'user_id' => new lang_string('lti_user_id_setting_user_id', 'ltisource_switch_config'),
       'username' => new lang_string('lti_user_id_setting_username', 'ltisource_switch_config'),

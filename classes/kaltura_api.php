@@ -68,7 +68,7 @@ class kaltura_api {
     try {
       $newcategory = $this->client->category->add($newcategory);
       return $newcategory;
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       // Prevent pausing execution if cant create new category.
       $this->logger->error("Could not create category. " . $e->getMessage());
       return false;
@@ -88,8 +88,22 @@ class kaltura_api {
     $model->name = $newname;
     $model->parentId = $parent->id;
 
-    if (($newcategory = $this->createCategory($model)) === false) {
-      return false;
+    $newcategory = $this->getCategoryByFullName($parent->fullName . ">" . $newname);
+    if ($newcategory !== false) {
+      // The destination category already exists.
+      // If the category is empty, we just use it. Otherwise we stop the execution.
+      if (isset($newcategory->entriesCount) && $newcategory->entriesCount == 0) {
+        $this->logger->log("Category {$newcategory->id} already exists but is empty, using it.");
+      } else {
+        $this->logger->error("Category {$newcategory->id} already exists and has content, skipping copy.");
+        return false;
+      }
+    } else {
+      $newcategory = $this->createCategory($model);
+      if ($newcategory === false) {
+        $this->logger->error("Could not create category {$newname}.");
+        return false;
+      }
     }
 
     $this->copyMedia($category, $newcategory);

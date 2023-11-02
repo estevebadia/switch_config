@@ -46,3 +46,5 @@ $string['partner_id'] = 'Kaltura Partner ID';
 $string['partner_id_description'] = 'The Partner ID of the Kaltura API. Used when migrating media galleries.';
 $string['adminsecret'] = 'Kaltura Admin Secret';
 $string['adminsecret_description'] = 'The Admin Secret of the Kaltura API. Used when migrating media galleries.';
+$string['kaltura_root_category'] = 'Kaltura Root Category';
+$string['kaltura_root_category_description'] = 'This must me the same as the rootCategory setting configured at Kaltura Configuration Management > Global > Categories. Used to replicate media galleries when copying or restoring a course.';

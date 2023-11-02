@@ -36,30 +36,31 @@ class controller {
    */
   public function restore_kaltura_course_media_gallery($oldcourse, $newcourse) {
     $api = new kaltura_api($this->logger);
-    $parent = $api->getCategoryByFullName("Moodle>site>channels");
+    $parent = $this->get_kaltura_parent_category();
     if ($parent === false) {
-      $this->logger->error("Could not find parent category 'Moodle>site>channels'");
       return;
     }
-
-    $category = $api->getCategoryByFullName("Moodle>site>channels>$oldcourse");
+    $fullname = $parent->fullName . ">" . $oldcourse;
+    $category = $api->getCategoryByFullName($fullname);
     if ($category === false) {
-      $this->logger->error("Original category Moodle>site>channels>$oldcourse not found");
+      $this->logger->error("Original category $fullname not found");
       return;
     }
 
     $newcategory = $api->copyCategory($category, $parent, $newcourse);
-    $this->logger->log("Copied Course Media Gallery category $oldcourse to $newcourse");
-
-    // Now copy the InContext subcategory used for mashups.
-    $inContext = $api->getCategoryByFullName("Moodle>site>channels>$oldcourse>InContext");
-    if ($inContext !== false ) {
-      $api->copyCategory($inContext, $newcategory, 'InContext');
-      $this->logger->log("Copied InContext subcategory $oldcourse>InContext to $newcourse>InContext");
-    } else {
-      $this->logger->log("No InContext subcategory for category $oldcourse");
+    if ($newcategory !== false) {
+      $this->logger->log("Copied Course Media Gallery category $oldcourse to $newcourse");
+      // Now copy the InContext subcategory used for mashups.
+      $inContext = $api->getCategoryByFullName($fullname . ">InContext");
+      if ($inContext !== false) {
+        $newInContext = $api->copyCategory($inContext, $newcategory, 'InContext');
+        if ($newInContext !== false) {
+          $this->logger->log("Copied InContext subcategory $oldcourse>InContext to $newcourse>InContext");
+        }
+      } else {
+        $this->logger->log("No InContext subcategory for category $oldcourse");
+      }
     }
-
   }
 
   /**
@@ -150,19 +151,44 @@ class controller {
    * cm $destination.
    */
   private function copy_kaltura_media_gallery($source, $destination) {
-    $api = new kaltura_api($this->logger);
-    $parent = $api->getCategoryByFullName("Moodle>site>channels");
+    $parent = $this->get_kaltura_parent_category();
     if ($parent === false) {
-      $this->logger->error("Could not find parent category 'Moodle>site>channels'");
       return;
     }
     $oldcategory = $source->course . '-' . $source->id;
-    $category = $api->getCategoryByFullName("Moodle>site>channels>$oldcategory");
+    $api = new kaltura_api($this->logger);
+    $category = $api->getCategoryByFullName($parent->fullName . ">". $oldcategory);
     if ($category === false) {
       $this->logger->error("Original category $oldcategory not found");
     }
     $newcategory = $destination->course . '-' . $destination->id;
     $api->copyCategory($category, $parent, $newcategory);
     $this->logger->log("Copied category $oldcategory to $newcategory");
+  }
+
+  private function get_kaltura_parent_category() {
+    static $parent = null;
+    if ($parent === null) {
+      $name = $this->get_kaltura_root_category_name();
+      $fullname = "$name>site>channels";
+
+      $api = new kaltura_api($this->logger);
+      $parent = $api->getCategoryByFullName($fullname);
+
+      if ($parent === false) {
+        $this->logger->error("Could not find parent category '$fullname'");
+      }
+    }
+    return $parent;
+  }
+
+  /**
+   * Return the root category for this site media gallery. This is configured in
+   * the plugin settings and must be the same setting as in
+   * Kaltura Administration Site >
+   *  Configuration Management > Global > Categories > rootCategory
+   */
+  protected function get_kaltura_root_category_name() {
+    return get_config('ltisource_switch_config', 'kaltura_root_category');
   }
 }
