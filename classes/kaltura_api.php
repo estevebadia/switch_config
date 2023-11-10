@@ -143,4 +143,8 @@ class kaltura_api {
       }
     }
   }
+
+  public function getClient() {
+    return $this->client;
+  }
 }

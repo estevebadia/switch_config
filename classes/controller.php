@@ -35,31 +35,35 @@ class controller {
    * original media gallery to the new media gallery using the Kaltura API.
    */
   public function restore_kaltura_course_media_gallery($oldcourse, $newcourse) {
-    $api = new kaltura_api($this->logger);
-    $parent = $this->get_kaltura_parent_category();
-    if ($parent === false) {
-      return;
-    }
-    $fullname = $parent->fullName . ">" . $oldcourse;
-    $category = $api->getCategoryByFullName($fullname);
-    if ($category === false) {
-      $this->logger->error("Original category $fullname not found");
-      return;
-    }
-
-    $newcategory = $api->copyCategory($category, $parent, $newcourse);
-    if ($newcategory !== false) {
-      $this->logger->log("Copied Course Media Gallery category $oldcourse to $newcourse");
-      // Now copy the InContext subcategory used for mashups.
-      $inContext = $api->getCategoryByFullName($fullname . ">InContext");
-      if ($inContext !== false) {
-        $newInContext = $api->copyCategory($inContext, $newcategory, 'InContext');
-        if ($newInContext !== false) {
-          $this->logger->log("Copied InContext subcategory $oldcourse>InContext to $newcourse>InContext");
-        }
-      } else {
-        $this->logger->log("No InContext subcategory for category $oldcourse");
+    try {
+      $api = new kaltura_api($this->logger);
+      $parent = $this->get_kaltura_parent_category();
+      if ($parent === false) {
+        return;
       }
+      $fullname = $parent->fullName . ">" . $oldcourse;
+      $category = $api->getCategoryByFullName($fullname);
+      if ($category === false) {
+        $this->logger->error("Original category $fullname not found");
+        return;
+      }
+
+      $newcategory = $api->copyCategory($category, $parent, $newcourse);
+      if ($newcategory !== false) {
+        $this->logger->log("Copied Course Media Gallery category $oldcourse to $newcourse");
+        // Now copy the InContext subcategory used for mashups.
+        $inContext = $api->getCategoryByFullName($fullname . ">InContext");
+        if ($inContext !== false) {
+          $newInContext = $api->copyCategory($inContext, $newcategory, 'InContext');
+          if ($newInContext !== false) {
+            $this->logger->log("Copied InContext subcategory $oldcourse>InContext to $newcourse>InContext");
+          }
+        } else {
+          $this->logger->log("No InContext subcategory for category $oldcourse");
+        }
+      }
+    } catch (Exception $e) {
+      $this->logger->error("Exception copying Kaltura course media gallery" . $e->getMessage());
     }
   }
 
@@ -69,18 +73,26 @@ class controller {
    */
   public function restore_kaltura_media_galleries($oldcourse, $newcourse) {
     // Get the Kaltura Media Gallery activities from the old course.
-    $oldcms = $this->get_kaltura_media_galleries($oldcourse);
-    $this->logger->log("Got " . count($oldcms) . " Kaltura Media Gallery activities from the source course.");
+    try {
+      $oldcms = $this->get_kaltura_media_galleries($oldcourse);
+      $this->logger->log("Got " . count($oldcms) . " Kaltura Media Gallery activities from the source course.");
 
-    $restored = $this->get_restored_tools($oldcms, $newcourse);
+      $restored = $this->get_restored_tools($oldcms, $newcourse);
 
-    foreach ($oldcms as $id => $oldcm) {
-      if ($restored[$id] !== null) {
-        // Copy the Kaltura Media Gallery contents from the old category to the new one.
-        $this->copy_kaltura_media_gallery($oldcm, $restored[$id]);
-      } else {
-        $this->logger->error("Could not find restored equivalent for LTI course module id $id.");
+      foreach ($oldcms as $id => $oldcm) {
+        if ($restored[$id] !== null) {
+          // Copy the Kaltura Media Gallery contents from the old category to the new one.
+          try {
+            $this->copy_kaltura_media_gallery($oldcm, $restored[$id]);
+          } catch (Exception $e) {
+            $this->logger->error("Exception copying Kaltura Media Gallery $id: " . $e->getMessage());
+          }
+        } else {
+          $this->logger->error("Could not find restored equivalent for LTI course module id $id.");
+        }
       }
+    } catch (Exception $e) {
+      $this->logger->error("Exception restoring Kaltura Media Galleries: " . $e->getMessage());
     }
   }
   /**

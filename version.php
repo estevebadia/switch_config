@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 // The current plugin version (Date: YYYYMMDDXX).
-$plugin->version   = 2023110200;
+$plugin->version   = 2023111000;
 // Requires Moodle 3.9. There is no trivial reason why it could not be relaxed
 // to Moodle 2.8, but it has just been tested with 3.9.
 $plugin->requires  = 2020061500;
