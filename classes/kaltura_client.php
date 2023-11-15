@@ -21,7 +21,7 @@ class RetryKalturaClient extends \KalturaClient {
     while ($tries < 3) {
       try {
         // parent class can either throw an exception or return false on error.
-        list($result, curlError) = parent::doHttpRequest($url, $params, $files);
+        list($result, $curlError) = parent::doHttpRequest($url, $params, $files);
         if ($result === false) {
           throw new \Exception($curlError);
         }
