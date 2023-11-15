@@ -25,6 +25,7 @@ class RetryKalturaClient extends \KalturaClient {
         if ($result === false) {
           throw new \Exception($curlError);
         }
+        return array($result, $curlError);
       } catch (\Exception $e) {
         $tries++;
         if ($tries >= 3) {
