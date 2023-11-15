@@ -1,13 +1,9 @@
 <?php
 namespace ltisource_switch_config;
 
-global $CFG;
+require_once __DIR__ . '/kaltura_client.php';
 
-// Load Kaltura API from /KalturaAPI folder but take extra care not to clash with
-// local_kaltura plugin.
-if (!class_exists('\KalturaClient')) {
-  require_once($CFG->dirroot . '/mod/lti/source/switch_config/KalturaAPI/KalturaClient.php');
-}
+global $CFG;
 
 class kaltura_api {
   protected $client;
@@ -31,7 +27,7 @@ class kaltura_api {
     $config->serviceUrl = $url;
     $config->format = \KalturaClientBase::KALTURA_SERVICE_FORMAT_JSON;
 
-    $client = new \KalturaClient($config);
+    $client = new RetryKalturaClient($config);
     $ks = $client->generateSession($adminsecret, $user, \KalturaSessionType::ADMIN, $partner_id);
     $client->setKs($ks);
 
@@ -87,15 +83,14 @@ class kaltura_api {
     $model = clone($category);
     $model->name = $newname;
     $model->parentId = $parent->id;
-
     $newcategory = $this->getCategoryByFullName($parent->fullName . ">" . $newname);
     if ($newcategory !== false) {
       // The destination category already exists.
       // If the category is empty, we just use it. Otherwise we stop the execution.
       if (isset($newcategory->entriesCount) && $newcategory->entriesCount == 0) {
-        $this->logger->log("Category {$newcategory->id} already exists but is empty, using it.");
+        $this->logger->log("Category $newname already exists ({$newcategory->id}) but is empty, using it.");
       } else {
-        $this->logger->error("Category {$newcategory->id} already exists and has content, skipping copy.");
+        $this->logger->error("Category $newname already exists ({$newcategory->id}) and has content, skipping copy.");
         return false;
       }
     } else {
