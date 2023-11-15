@@ -131,6 +131,7 @@ class controller {
               JOIN {lti} lti ON cm.instance = lti.id
               LEFT JOIN {lti_types} ltit ON ltit.id = lti.typeid
               WHERE cm.course = :courseid
+                AND cm.module = :moduleid
                 AND lti.typeid = :ltitypeid
                 AND lti.toolurl = :ltitoolurl
                 AND ltit.baseurl = :ltitbaseurl
@@ -138,9 +139,12 @@ class controller {
              ";
       $params = array(
         'courseid' => $courseid,
+         // Ensure that the module is an LTI module.
+        'moduleid' => $module->module,
         'ltitypeid' => $module->typeid,
         'ltitoolurl' => $module->toolurl,
         'ltitbaseurl' => $module->baseurl,
+          // timecreated is the same for the original and the restored tool.
         'ltitimecreated' => $module->timecreated
       );
       $candidates = $DB->get_records_sql($sql, $params);
@@ -149,11 +153,16 @@ class controller {
         $candidates = array_filter($candidates, function($candidate) use ($module) {
           return $candidate->name == $module->name;
         });
+        if (count($candidates) > 1) {
+          // Log unexpected situation, but continue anyway.
+          $this->logger->error("Found more than one candidate for LTI course module id $module->id in course $courseid.");
+        }
       }
       if (count($candidates) > 0) {
         $restored[$module->id] = array_shift($candidates);
       } else {
         $restored[$module->id] = null;
+        $this->logger->error("Could not find restored equivalent for LTI course module id $module->id in course $courseid.");
       }
     }
     return $restored;
@@ -172,6 +181,7 @@ class controller {
     $category = $api->getCategoryByFullName($parent->fullName . ">". $oldcategory);
     if ($category === false) {
       $this->logger->error("Original category $oldcategory not found");
+      return;
     }
     $newcategory = $destination->course . '-' . $destination->id;
     $api->copyCategory($category, $parent, $newcategory);
