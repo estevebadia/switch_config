@@ -136,7 +136,7 @@ class kaltura_api {
         try {
           $this->client->categoryEntry->add($entry);
           $this->logger->log("Added entry {$id} to category {$tocategory->id}");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
           // Don't pause execution.
           $this->logger->error("Error adding entry {$id} to category {$tocategory->id}. Should be fixed manually! " . $e->getMessage());
         }
