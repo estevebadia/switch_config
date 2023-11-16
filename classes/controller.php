@@ -62,7 +62,7 @@ class controller {
           $this->logger->log("No InContext subcategory for category $oldcourse");
         }
       }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $this->logger->error("Exception copying Kaltura course media gallery" . $e->getMessage());
     }
   }
@@ -84,14 +84,14 @@ class controller {
           // Copy the Kaltura Media Gallery contents from the old category to the new one.
           try {
             $this->copy_kaltura_media_gallery($oldcm, $restored[$id]);
-          } catch (Exception $e) {
+          } catch (\Exception $e) {
             $this->logger->error("Exception copying Kaltura Media Gallery $id: " . $e->getMessage());
           }
         } else {
           $this->logger->error("Could not find restored equivalent for LTI course module id $id.");
         }
       }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $this->logger->error("Exception restoring Kaltura Media Galleries: " . $e->getMessage());
     }
   }
@@ -188,11 +188,16 @@ class controller {
     $this->logger->log("Copied category $oldcategory to $newcategory");
   }
 
+  private function get_kaltura_parent_category_fullname() {
+    $name = $this->get_kaltura_root_category_name();
+    $fullname = "$name>site>channels";
+    return $fullname;
+  }
+
   private function get_kaltura_parent_category() {
     static $parent = null;
     if ($parent === null) {
-      $name = $this->get_kaltura_root_category_name();
-      $fullname = "$name>site>channels";
+      $fullname = $this->get_kaltura_parent_category_fullname();
 
       $api = new kaltura_api($this->logger);
       $parent = $api->getCategoryByFullName($fullname);
@@ -212,5 +217,52 @@ class controller {
    */
   protected function get_kaltura_root_category_name() {
     return get_config('ltisource_switch_config', 'kaltura_root_category');
+  }
+
+  /**
+   * Deletes the category Moodle>site>channels>$name
+   */
+  private function delete_kaltura_gallery($name) {
+    try {
+      $parentname = $this->get_kaltura_parent_category_fullname();
+      $fullname = $parentname . ">" . $name;
+
+      $api = new kaltura_api($this->logger);
+      $category = $api->getCategoryByFullName($fullname);
+      if ($category === false) {
+        $this->logger->error("Kaltura category $fullname not found for delete.");
+        return;
+      }
+      $api->deleteCategory($category);
+      $this->logger->log("Deleted Kaltura category $fullname");
+    } catch (\Exception $e) {
+      $this->logger->error("Exception deleting Kaltura category $fullname: " . $e->getMessage());
+    }
+  }
+
+  /**
+   * Delete the category related to the given course id.
+   */
+  public function delete_kaltura_course_media_gallery($courseid) {
+    $this->delete_kaltura_gallery($courseid);
+  }
+
+  /**
+   * Check if the course module id just given is indeed an LTI Media Gallery and
+   * in this case, it deletes the associated category in Kaltura server.
+   */
+  public function delete_kaltura_media_gallery($courseid, $cmid) {
+    $this->delete_kaltura_gallery($courseid . "-" . $cmid);
+  }
+
+  /**
+   * Delete all the Kaltura Media Galleries (Activities) associated to the given
+   * course.
+   */
+  public function delete_kaltura_activity_media_galleries($courseid) {
+    $galleries = $this->get_kaltura_media_galleries($courseid);
+    foreach ($galleries as $gallery) {
+      $this->delete_kaltura_media_gallery($courseid, $gallery->id);
+    }
   }
 }

@@ -48,4 +48,5 @@ class observer {
     $controller->restore_kaltura_course_media_gallery($oldcourse, $newcourse);
     $controller->restore_kaltura_media_galleries($oldcourse, $newcourse);
   }
+
 }

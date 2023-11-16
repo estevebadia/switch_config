@@ -89,3 +89,49 @@ function ltisource_switch_config_get_lti_user_id() {
 
   return $id . $suffix;
 }
+
+/**
+ * This acts as an event observer for course module deletion. If an LTI Kaltura
+ * Media Gallery is deleted, it also deletes the associated Category in Kaltura
+ * server.
+ */
+function ltisource_switch_config_pre_course_module_delete($cm) {
+  global $DB;
+  $module = $DB->get_record('modules', array('id' => $cm->module));
+  // If the deleted module is not an LTI module, for sure is not a gallery.
+  if ($module->name !== 'lti') {
+    return;
+  }
+  // Get instance object and lti_type object.
+  $lti = $DB->get_record('lti', array('id' => $cm->instance));
+  $ltitype = $DB->get_record('lti_types', array('id' => $lti->typeid));
+  // Deduce the tool LTI launch url.
+  $url = !empty(trim($lti->toolurl)) ? trim($lti->toolurl) : trim($ltitype->baseurl);
+  // Check if the url is a Kaltura Media Gallery url.
+  $parsed_url = parse_url($url);
+  if ($parsed_url['path'] == KALTURA_MEDIA_GALLERY_URL_PATH) {
+    // Check if the deleted module is indeed a LTI Kaltura Gallery.
+    $controller = new \ltisource_switch_config\controller();
+    $controller->delete_kaltura_media_gallery($cm->course, $cm->id);
+  }
+}
+
+/**
+ * This acts as an event observer for course deletion. If a course is deleted,
+ * it also deletes the associated Kaltura Media Gallery in Kaltura server both
+ * for the course gallery and for all activity galleries.
+ */
+function ltisource_switch_config_pre_course_delete($course) {
+  $controller = new \ltisource_switch_config\controller();
+
+  // Delete course media gallery.
+  $controller->delete_kaltura_course_media_gallery($course->id);
+
+  // Delete activity media galleries.
+  $controller->delete_kaltura_activity_media_galleries($course->id);
+
+}
+
+
+
+

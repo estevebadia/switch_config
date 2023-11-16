@@ -30,5 +30,5 @@ $observers = array(
   array(
     'eventname' => '\core\event\course_restored',
     'callback' => '\ltisource_switch_config\observer::course_restored',
-  ),
+  )
 );

@@ -139,6 +139,10 @@ class kaltura_api {
     }
   }
 
+  public function deleteCategory($category) {
+    return $this->client->category->delete($category->id, \KalturaNullableBoolean::FALSE_VALUE);
+  }
+
   public function getClient() {
     return $this->client;
   }
