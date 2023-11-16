@@ -1,7 +1,8 @@
 # SWITCH LTI configuration
 Moodle plugin of type ltisource that customizes LTI calls to Kaltura media provider for SWITCH users.
 
-Additionally, when a course is copied or backup & restored from the same site, this plugin duplicates the entries from the original Media Galleries (both course and activity galleries) to the new ones.
+Additionally, when a course is copied or backup & restored from the same site, this plugin duplicates the entries from the original Media Galleries (both course and activity galleries) to the new ones. Similarly, when a course or a Media Gallery external tool is deleted, this
+plugin deletes the associated categories from the Kaltura server.
 
 ## Install
 Clone or copy this repo into `/mod/lti/source` folder. From Moodle base folder:
