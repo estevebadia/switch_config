@@ -34,7 +34,7 @@ class controller {
    * When a course is restored, copy the Kaltura Media Gallery contents from the
    * original media gallery to the new media gallery using the Kaltura API.
    */
-  public function restore_kaltura_course_media_gallery($oldcourse, $newcourse) {
+  public function restore_kaltura_course_media_gallery($oldcourse, $newcourse, $copyInContext = false) {
     try {
       $api = new kaltura_api($this->logger);
       $parent = $this->get_kaltura_parent_category();
@@ -52,14 +52,16 @@ class controller {
       if ($newcategory !== false) {
         $this->logger->log("Copied Course Media Gallery category $oldcourse to $newcourse");
         // Now copy the InContext subcategory used for mashups.
-        $inContext = $api->getCategoryByFullName($fullname . ">InContext");
-        if ($inContext !== false) {
-          $newInContext = $api->copyCategory($inContext, $newcategory, 'InContext');
-          if ($newInContext !== false) {
-            $this->logger->log("Copied InContext subcategory $oldcourse>InContext to $newcourse>InContext");
+        if ($copyInContext) {
+          $inContext = $api->getCategoryByFullName($fullname . ">InContext");
+          if ($inContext !== false) {
+            $newInContext = $api->copyCategory($inContext, $newcategory, 'InContext');
+            if ($newInContext !== false) {
+              $this->logger->log("Copied InContext subcategory $oldcourse>InContext to $newcourse>InContext");
+            }
+          } else {
+            $this->logger->log("No InContext subcategory for category $oldcourse");
           }
-        } else {
-          $this->logger->log("No InContext subcategory for category $oldcourse");
         }
       }
     } catch (\Exception $e) {
@@ -265,4 +267,85 @@ class controller {
       $this->delete_kaltura_media_gallery($courseid, $gallery->id);
     }
   }
+
+  /**
+   * Helper function for check_kaltura_restore()
+   * @return true if the category is correctly restored, false otherwise and
+   * sets the $missing array to the ids of missing entries.
+   *
+   */
+  private function check_kaltura_category_restore($oldname, $newname, &$errors, $activity = false) {
+    $api = new kaltura_api($this->logger);
+    $parentname = $this->get_kaltura_parent_category_fullname();
+
+    $oldcategory = $api->getCategoryByFullName($parentname . ">" . $oldname);
+    // If the original course didn't have the media gallery, don't check if it has been copied.
+    if ($oldcategory) {
+      $newcategory = $api->getCategoryByFullName($parentname . ">" . $newname);
+      $name = $activity ? 'The activity gallery category' : 'The course gallery category';
+      if ($newcategory == false) {
+        $errors[] = $name . ' ' . $newname . ' has not been created.';
+        return false;
+      } else {
+        // Check that the course media gallery has the same number of entries.
+        $oldcount = $oldcategory->entriesCount;
+        $newcount = $newcategory->entriesCount;
+        if ($oldcount > $newcount) {
+          $oldentries = $api->categoryMediaIds($oldcategory->id);
+          $newentries = $api->categoryMediaIds($newcategory->id);
+          $missing = array_diff($oldentries, $newentries);
+          $errors[] = $name . ' ' . $newname . ' is missing these entries: ' . implode(', ', $missing);
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * This function is to be called after performing the restore of the kaltura
+   * course media gallery and kaltura activity galleries. It checks that all
+   * media have been restored indeed. It outputs a message to the user.
+   */
+  public function check_kaltura_restore($oldcourse, $newcourse) {
+    // Check that the course media gallery has been restored.
+    $errors = [];
+    $api = new kaltura_api($this->logger);
+
+    $this->check_kaltura_category_restore($oldcourse, $newcourse, $errors);
+
+    // Now check activity categories.
+    $oldgalleries = $this->get_kaltura_media_galleries($oldcourse);
+    $newgalleries = $this->get_restored_tools($oldgalleries, $newcourse);
+
+    foreach ($oldgalleries as $oldgallery) {
+      $newgallery = $newgalleries[$oldgallery->id];
+      $this->check_kaltura_category_restore($oldcourse . "-" . $oldgallery->id, $newcourse . "-" . $newgallery->id, $errors, true);
+    }
+
+    // Show output.
+    $course = get_course($newcourse);
+    if (count($errors) > 0) {
+      if (CLI_SCRIPT) {
+        mtrace("[KALTURA ERROR] Kaltura restore errors for course '{$course->fullname}' ({$newcourse}). Details:");
+        foreach ($errors as $error) {
+          mtrace(" - " . $error);
+        }
+      } else {
+        echo '<div class="notifytiny debuggingmessage" data-rel="debugging">[KALTURA ERROR] Kaltura restore errors for course <em>' . $course->fullname . "</em> ({$newcourse}). Details:<br/>";
+        foreach ($errors as $error) {
+          echo " - " . $error . '<br/>';
+        }
+        echo '</div>';
+      }
+    } else {
+      if (CLI_SCRIPT) {
+        mtrace("[KALTURA INFO] Kaltura restore for course '{$course->fullname}' ({$newcourse}) completed successfully.");
+      } else {
+        echo '<div class="notifytiny debuggingmessage" data-rel="debugging">[KALTURA INFO] Kaltura restore for course <em>' . $course->fullname . "</em> ({$newcourse}) completed successfully.</div>";
+      }
+    }
+    flush();
+  }
+
 }

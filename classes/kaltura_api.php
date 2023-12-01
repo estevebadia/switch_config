@@ -105,22 +105,22 @@ class kaltura_api {
     return $newcategory;
   }
 
+  public function categoryMediaIds($categoryId) {
+    $filter = new \KalturaCategoryEntryFilter();
+    $filter->categoryIdEqual = $categoryId;
+    $pager = null;
+    $result = $this->client->categoryEntry->listAction($filter, $pager);
+    $ids = array_map(function($object) { return $object->entryId; }, $result->objects);
+    return $ids;
+  }
+
   /**
    * Copy all media from one category to another.
    */
   public function copyMedia($fromcategory, $tocategory) {
-    $filter = new \KalturaCategoryEntryFilter();
-    $filter->categoryIdEqual = $fromcategory->id;
-
-    // Add all media from old category to new category.
-    $result = $this->client->categoryEntry->listAction($filter, null);
-    $entryids = array_map(function($object) { return $object->entryId; }, $result->objects);
+    $entryids = $this->categoryMediaIds($fromcategory->id);
     // Check which entries are already in target category.
-    $filter->categoryIdEqual = $tocategory->id;
-    $filter->entryIdIn = implode(',', $entryids);
-    $existing = $this->client->categoryEntry->listAction($filter, null);
-    $existingids = array_map(function($object) { return $object->entryId; }, $existing->objects);
-
+    $existingids = $this->categoryMediaIds($tocategory->id);
     foreach ($entryids as $id) {
       if (in_array($id, $existingids)) {
         $this->logger->log("Entry id {$id} already in category, no need to add");
