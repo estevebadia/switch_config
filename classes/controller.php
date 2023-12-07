@@ -290,12 +290,19 @@ class controller {
         // Check that the course media gallery has the same number of entries.
         $oldcount = $oldcategory->entriesCount;
         $newcount = $newcategory->entriesCount;
-        if ($oldcount > $newcount) {
+        if ($oldcount != $newcount) {
           $oldentries = $api->categoryMediaIds($oldcategory->id);
           $newentries = $api->categoryMediaIds($newcategory->id);
           $missing = array_diff($oldentries, $newentries);
-          $errors[] = $name . ' ' . $newname . ' is missing these entries: ' . implode(', ', $missing);
-          return false;
+          // If $oldcount > $newcount, there should be missing entries and this
+          // next conditional is superfluous. However we've been reported empty
+          // error messages, so there must be some cases where the entry count
+          // does not match but there are no missing entries when you actually
+          // check them.
+          if (count($missing) > 0) {
+            $errors[] = $name . ' ' . $newname . ' is missing these entries: ' . implode(', ', $missing) . '.';
+            return false;
+          }
         }
       }
     }
