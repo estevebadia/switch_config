@@ -21,22 +21,58 @@ Visit your Moodle as admin and update the database as required.
 ## Setup
 After having downloaded the plugin code, login to Moodle with administrator rights and install the plugin. Fill in the configuration settings *Kaltura host* and *LTI user_id paramater*. The options for Id are the standard user fields `id`, `username`, `email` and `idnumber` and any custom profile field of type text. It is important that you set a valid *Kaltura host* before configuring the tools.
 
-In order to add the external tools, go to  *Site administration* > *Plugins* > *Activity modules* > *External tool* > *Manage tools*. Tool URLs provide the basic tool configuration options, but some settings can't be configured from the tool url and we must set them manually. Follow the steps:
+In order to add the external tools, go to  *Site administration* > *Plugins* > *Activity modules* > *External tool* > *Manage tools*. 
+
+You can configure the tool fully manually or use the cartridge configuration file bundled with the plugin. The cartridge configuration will save you a minute but it may not work if your server can't access itself by network.
+
 ### Add Media gallery external tool
- - Set the Tool URL replacing your Moodle base url and click the button *Add legacy LTI* (just *Add* in Moodle 3.x): `[MOODLE BASE URL]/mod/lti/source/switch_config/tool/video_gallery.php`
- - Set the *Consumer key*, which is a number, and the *Shared secret*, which is a long sequence of digits.
+
+#### Cartridge configuration
+ - Enter the URL `[MOODLE BASE URL]/mod/lti/source/switch_config/tool/video_gallery.php` and click the button *Add legacy LTI* (just *Add* in Moodle 3.x). 
+ - You should see form asking the Consumer key and secret. Otherwise there has been an error and you should try the manual configuration or see the troubleshooting section at the end of this document.
+ - Set the *Consumer key*, which usually is your kaltura partner id, a short number, and the *Shared secret*, which is a long sequence of digits.
  - You will get a new tool with title *Video Gallery*.
  - Click the gear icon at the top-right of the tool card to configure it further.
  - Set *Tool configuration usage*: *Show in activity chooser and as a preconfigured tool*.
+ - Click the *Save changes* button.
+
+####  Manual configuration
+ - Click the *configure a tool manually* link. Fill in the fields, leaving others blank or defualt values:
+ - Tool name: `Video Gallery`
+ - Tool URL: `[KAF URL]/hosted/index/course-gallery`
+ - Tool description: `Add a Kaltura Media Gallery to the course structure. Then add videos to the gallery from My Media or upload new content.`
+ - Consumer key: This is your kaltura partner id, usually a 3-digit number.
+ - Shared secret: This is your kaltura admin secret, a long sequence of digits.
+ - Tool configuration usage: `Show in activity chooser and as a preconfigured tool`
+ - Click the *show more...* link and fill both Icon URL and Secure icon URL with `[MOODLE BASE URL]/mod/lti/source/switch_config/tool/pix/video-gallery-24.svg`
+ - Click the *Save changes* button.
+
 
 ### Add Video resource external tool
- - Set the Tool URL replacing your Moodle base url and click the button *Add legacy LTI* (just *Add* in Moodle 3.x): `[MOODLE BASE URL]/mod/lti/source/switch_config/tool/video_resource.php`
- - Set the *Consumer key*, which is a number, and the *Shared secret*, which is a long sequence of digits.
+
+#### Cartridge configuration
+ - Enter the URL `[MOODLE BASE URL]/mod/lti/source/switch_config/tool/video_resource.php` and click the button *Add legacy LTI* (just *Add* in Moodle 3.x).
+ - You should see form asking the Consumer key and secret. Otherwise there has been an error and you should try the manual configuration or see the troubleshooting section at the end of this document.
+ - Set the *Consumer key*, which usually is your kaltura partner id, a short number, and the *Shared secret*, which is a long sequence of digits.
  - You will get a new tool with title *Video Resource*.
  - Click the gear icon at the top-right of the tool card to configure it further.
  - Set *Tool configuration usage*: *Show in activity chooser and as a preconfigured tool*.
- - If necessary, click the *Show more...* link at the end of *Tool Settings* section.
+ - Click the *Show more...* link at the end of *Tool Settings* section (if necessary to see the next field).
  - Check the box *Content Item Message* and copy the value from *Tool URL* to *Content selection URL*.
+ - Click the *Save changes* button.
+
+#### Manual configuration
+ - Click the *configure a tool manually* link. Fill in the fields, leaving others blank or defualt values:
+ - Tool name: `Video Resource`
+ - Tool URL: `[KAF URL]/browseandembed/index/index`
+ - Tool description: `Add a video to the course structure.`
+ - Consumer key: This is your kaltura partner id, usually a 3-digit number.
+ - Shared secret: This is your kaltura admin secret, a long sequence of digits.
+ - Tool configuration usage: `Show in activity chooser and as a preconfigured tool`
+ - Click the *show more...* link and fill both Icon URL and Secure icon URL with `[MOODLE BASE URL]/mod/lti/source/switch_config/tool/pix/video-resource-24.svg`
+ - Check the box *Content Item Message* and copy the value from *Tool URL* to *Content selection URL*.
+ - Click the *Save changes* button.
+
 ### LTI 1.3
 In order to integrate Kaltura using LTI 1.3.
 
@@ -44,6 +80,7 @@ In order to integrate Kaltura using LTI 1.3.
 
  | Name | Value |
  |------|-------|
+ | LTI version | `LTI 1.3` |
  | Public key type | `Keyset URL` |
  | Public keyset | `[KAF URL]/hosted/index/lti-advantage-key-set` |
  | Initiate login URL | `[KAF URL]/hosted/index/oidc-init` |
@@ -58,7 +95,6 @@ In order to integrate Kaltura using LTI 1.3.
  See https://knowledge.kaltura.com/help/kaltura-application-framework-kaf-lti-integration-guide for all potential Kaltura LTI features.
 
 ### Troubleshooting
- - In local development environment, be sure that Moodle can access the tool URL. In particular, check the *cURL blocked hosts list* setting in the *HTTP security* site administration section.
- - Anyway tools can be manually configured. You can use the files in Tool URLs and found the parameters Launch Url, Name, Descriptoin and Icon Url.
- - This module has been tested in Moodle 3.9 and Moodle 4.2, however it may work from Moodle 2.8+.
+ - Be sure that Moodle can access the tool URL. In particular, check the *cURL blocked hosts list* setting in the *HTTP security* site administration section and be sure your server IP is not in the list while installing the tools via cartridge file. You can restore the default configuration afterwards.
+ - This module has been tested in Moodle 3.9 and Moodle 4.2, however it may work from Moodle 2.8+ onwards.
 
