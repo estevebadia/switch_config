@@ -18,7 +18,7 @@ git pull
 ```
 Visit your Moodle as admin and update the database as required.
 ## Setup with Kaltura plugin
-There are two ways you can use Kaltura media platform from Moodle. The first one is to use the Kaltura Moodle plugin. In this case you should install the [forked version of the Kaltura plugin](https://github.com/estevebadia/kaltura_moodle_plugin). This version allows us to modify the calls to the Kaltura service by changing the user id, as well as other minor improvements. It is not possible for this plugin to set user id sent to Kaltura service when using the original Kaltura Moodle plugin.
+There are two ways you can use Kaltura media platform from Moodle. The first one is to use the Kaltura Moodle plugin. In this case you should install the [forked version of the Kaltura plugin](https://github.com/estevebadia/kaltura_moodle_plugin). This version allows us to modify the calls to the Kaltura service by changing the user id, as well as other minor improvements. The original Kaltura Moodle plugin does not support setting the user ID sent to the Kaltura service.
 
 Alternatively, for a lightweight integration of Kaltura, you may choose to use the core Moodle LTI activities.
 
