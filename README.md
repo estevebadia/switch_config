@@ -1,8 +1,7 @@
 # SWITCH LTI configuration
 Moodle plugin of type ltisource that customizes LTI calls to Kaltura media provider for SWITCH users.
 
-Additionally, when a course is copied or backup & restored from the same site, this plugin duplicates the entries from the original Media Galleries (both course and activity galleries) to the new ones. Similarly, when a course or a Media Gallery external tool is deleted, this
-plugin deletes the associated categories from the Kaltura server.
+Additionally, when a course is copied or backup & restored from the same site, this plugin duplicates the entries from the original Media Galleries (both course and activity galleries) to the new ones. Similarly, when a course or a Media Gallery external tool is deleted, this plugin deletes the associated categories from the Kaltura server.
 
 ## Install
 Clone or copy this repo into `/mod/lti/source` folder. From Moodle base folder:
@@ -18,7 +17,13 @@ cd mod/lti/source/switch_config
 git pull
 ```
 Visit your Moodle as admin and update the database as required.
-## Setup
+## Setup with Kaltura plugin
+There are two ways you can use Kaltura media platform from Moodle. The first one is to install the Kaltura Moodle plugin. In this case you should install the [forked version of the Kaltura plugin](https://github.com/estevebadia/kaltura_moodle_plugin). This modified version allows us to modify the calls to the Kaltura service by changing the user id.
+
+Alternatively, for a lightweight integration of Kaltura, you may choose to use the core Moodle LTI activities.
+
+## Setup with core Moodle LTI activities
+
 After having downloaded the plugin code, login to Moodle with administrator rights and install the plugin. Fill in the configuration settings *Kaltura host* and *LTI user_id paramater*. The options for Id are the standard user fields `id`, `username`, `email` and `idnumber` and any custom profile field of type text. It is important that you set a valid *Kaltura host* before configuring the tools.
 
 In order to add the external tools, go to  *Site administration* > *Plugins* > *Activity modules* > *External tool* > *Manage tools*. 
