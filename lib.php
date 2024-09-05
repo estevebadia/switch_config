@@ -124,8 +124,10 @@ function ltisource_switch_config_pre_course_module_delete($cm) {
 function ltisource_switch_config_pre_course_delete($course) {
   $controller = new \ltisource_switch_config\controller();
 
-  // Delete course media gallery.
-  $controller->delete_kaltura_course_media_gallery($course->id);
+  if ($controller->is_kaltura_course_media_gallery_enabled()) {
+    // Delete course media gallery.
+    $controller->delete_kaltura_course_media_gallery($course->id);
+  }
 
   // Delete activity media galleries.
   $controller->delete_kaltura_activity_media_galleries($course->id);

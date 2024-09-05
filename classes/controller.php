@@ -315,11 +315,20 @@ class controller {
    * media have been restored indeed. It outputs a message to the user.
    */
   public function check_kaltura_restore($oldcourse, $newcourse) {
-    // Check that the course media gallery has been restored.
-    $errors = [];
-    $api = new kaltura_api($this->logger);
+    $has_course_gallery = $this->is_kaltura_course_media_gallery_enabled();
+    $oldgalleries = $this->get_kaltura_media_galleries($oldcourse);
 
-    $this->check_kaltura_category_restore($oldcourse, $newcourse, $errors);
+    if (!$has_course_gallery && count($oldgalleries) == 0) {
+      // No media galleries to check.
+      return;
+    }
+
+    $errors = [];
+
+    // Check that the course media gallery has been restored.
+    if ($has_course_gallery) {
+      $this->check_kaltura_category_restore($oldcourse, $newcourse, $errors);
+    }
 
     // Now check activity categories.
     $oldgalleries = $this->get_kaltura_media_galleries($oldcourse);
@@ -332,27 +341,22 @@ class controller {
 
     // Show output.
     $course = get_course($newcourse);
+    $nl = CLI_SCRIPT ? "\n" : "<br/>\n";
     if (count($errors) > 0) {
-      if (CLI_SCRIPT) {
-        mtrace("[KALTURA ERROR] Kaltura restore errors for course '{$course->fullname}' ({$newcourse}). Details:");
-        foreach ($errors as $error) {
-          mtrace(" - " . $error);
-        }
-      } else {
-        echo '<div class="notifytiny debuggingmessage" data-rel="debugging">[KALTURA ERROR] Kaltura restore errors for course <em>' . $course->fullname . "</em> ({$newcourse}). Details:<br/>";
-        foreach ($errors as $error) {
-          echo " - " . $error . '<br/>';
-        }
-        echo '</div>';
-      }
+      $message = implode($nl, $errors);
+      $this->logger->error("Kaltura restore errors for course '{$course->fullname}' ({$newcourse}). Details:" . $nl . $message);
     } else {
-      if (CLI_SCRIPT) {
-        mtrace("[KALTURA INFO] Kaltura restore for course '{$course->fullname}' ({$newcourse}) completed successfully.");
-      } else {
-        echo '<div class="notifytiny debuggingmessage" data-rel="debugging">[KALTURA INFO] Kaltura restore for course <em>' . $course->fullname . "</em> ({$newcourse}) completed successfully.</div>";
-      }
+      $this->logger->log("Kaltura restore for course '{$course->fullname}' ({$newcourse}) completed successfully.");
     }
     flush();
+  }
+
+  /**
+   * Return whether the course media gallery plugin is enabled in this course.
+   */
+  public function is_kaltura_course_media_gallery_enabled() {
+    $plugininfo = \core_plugin_manager::instance()->get_plugin_info('local_kalturamediagallery');
+    return !is_null($plugininfo);
   }
 
 }

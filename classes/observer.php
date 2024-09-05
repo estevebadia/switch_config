@@ -45,7 +45,11 @@ class observer {
     $newcourse = $event->courseid;
 
     $controller = new \ltisource_switch_config\controller();
-    $controller->restore_kaltura_course_media_gallery($oldcourse, $newcourse);
+
+    // Don't try to restore Kaltura Media Gallery if the module is not enabled.
+    if ($controller->is_kaltura_course_media_gallery_enabled()) {
+      $controller->restore_kaltura_course_media_gallery($oldcourse, $newcourse);
+    }
     $controller->restore_kaltura_media_galleries($oldcourse, $newcourse);
     $controller->check_kaltura_restore($oldcourse, $newcourse);
   }
